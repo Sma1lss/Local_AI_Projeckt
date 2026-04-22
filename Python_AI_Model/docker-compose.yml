@@ -1,0 +1,120 @@
+﻿version: '3.9'
+
+services:
+  retriever:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.retriever:app --host 0.0.0.0 --port 8002
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+    ports:
+      - "8002:8002"
+
+  router:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.router:app --host 0.0.0.0 --port 8003
+    env_file:
+      - .env
+    ports:
+      - "8003:8003"
+
+  executor:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.executor:app --host 0.0.0.0 --port 8004
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8004:8004"
+
+  controller:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.controller:app --host 0.0.0.0 --port 8000
+    env_file:
+      - .env
+    depends_on:
+      - retriever
+      - router
+      - executor
+    ports:
+      - "8000:8000"
+
+  model_codellama:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.model_server_llamacpp:app --host 0.0.0.0 --port 8001
+    env_file:
+      - .env
+    environment:
+      MODEL_NAME: codellama-7b
+      MODEL_PATH: /app/models/codellama-7b/codellama-7b-q4.gguf
+      LLAMACPP_BIN: /app/llama.cpp/build/bin/llama-cli
+    volumes:
+      - ./models:/app/models
+      - ./llama.cpp:/app/llama.cpp
+    ports:
+      - "8001:8001"
+
+  model_starcoder:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.model_server_hf:app --host 0.0.0.0 --port 8011
+    env_file:
+      - .env
+    environment:
+      MODEL_NAME: starcoder2-3b
+      MODEL_ID: bigcode/starcoder2-3b
+      MODEL_DEVICE: cuda
+      USE_BITSANDBYTES: 1
+    volumes:
+      - ./models:/app/models
+    ports:
+      - "8011:8011"
+
+  model_llama3:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.model_server_llamacpp:app --host 0.0.0.0 --port 8010
+    env_file:
+      - .env
+    environment:
+      MODEL_NAME: llama3-3b
+      MODEL_PATH: /app/models/llama3-3b/llama3-3b-instruct-q4.gguf
+      LLAMACPP_BIN: /app/llama.cpp/build/bin/llama-cli
+    volumes:
+      - ./models:/app/models
+      - ./llama.cpp:/app/llama.cpp
+    ports:
+      - "8010:8010"
+
+  model_mpt3:
+    build:
+      context: .
+      dockerfile: deploy/docker/python-service.Dockerfile
+    command: uvicorn services.model_server_llamacpp:app --host 0.0.0.0 --port 8012
+    env_file:
+      - .env
+    environment:
+      MODEL_NAME: mpt3
+      MODEL_PATH: /app/models/mpt-3b/mpt-3b-instruct-q4.gguf
+      LLAMACPP_BIN: /app/llama.cpp/build/bin/llama-cli
+    volumes:
+      - ./models:/app/models
+      - ./llama.cpp:/app/llama.cpp
+    ports:
+      - "8012:8012"

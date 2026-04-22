@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: fsss
+  main:
+    web-application-type: reactive
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+  webflux:
+    multipart:
+      max-in-memory-size: 256KB
+      max-parts: 1
+      max-disk-usage-per-part: 0
+  codec:
+    max-in-memory-size: 256KB
+
+server:
+  port: 8080
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    health:
+      show-details: when_authorized
+
+fsss:
+  max-file-size-bytes: 524288000
+  max-header-bytes: 65536
+  early-abort-on-malware: true
+  spool:
+    mode: HYBRID
+    temp-dir: /fsss-spool
+    memory-threshold-bytes: 10485760
+    buffer-size-bytes: 65536
+  security:
+    api-key: ${FSSS_API_KEY:change-me}
+    max-in-flight: 50
+    rate-limit:
+      capacity: 100
+      refill-per-second: 50
+  downstream:
+    url: ${FSSS_DOWNSTREAM_URL:http://127.0.0.1:8090/files}
+    timeout: 10s
+  clamav:
+    enabled: true
+    host: ${FSSS_CLAMAV_HOST:clamav}
+    port: 3310
+    timeout: 10s
+  sandbox:
+    mode: REMOTE
+    remote-url: ${FSSS_SANDBOX_URL:http://scanner-sandbox:8081/internal/scan}
+  logging:
+    security-webhook-url: ${FSSS_SECURITY_WEBHOOK:}
+  scan:
+    mime:
+      max-bytes: 65536
+    signatures:
+      enabled: true
+      patterns:
+        - "MZ"
+        - "<script"
+        - "powershell"
+        - "cmd.exe"
+        - "vbaProject.bin"
+    macros:
+      enabled: true
+      max-scan-bytes: 4194304
+    yara:
+      enabled: false
+      rules-path: /opt/fsss/yara/index.yar
+    dynamic:
+      enabled: false
+      url: http://scanner-sandbox:8081/internal/dynamic
+      timeout: 20s
+
+---
+spring:
+  config:
+    activate:
+      on-profile: sandbox
+server:
+  port: 8081
+fsss:
+  sandbox:
+    mode: LOCAL
+
+---
+spring:
+  config:
+    activate:
+      on-profile: edge
+server:
+  port: 8080

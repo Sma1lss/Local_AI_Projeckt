@@ -1,0 +1,17 @@
+﻿[Unit]
+Description=LLM CodeLlama Model Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/local_llm_system
+EnvironmentFile=/opt/local_llm_system/.env
+Environment=MODEL_NAME=codellama-7b
+Environment=MODEL_PATH=/opt/local_llm_system/models/codellama-7b/codellama-7b-q4.gguf
+Environment=LLAMACPP_BIN=/opt/local_llm_system/llama.cpp/build/bin/llama-cli
+ExecStart=/opt/local_llm_system/.venv/bin/python -m uvicorn services.model_server_llamacpp:app --host 0.0.0.0 --port 8001
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

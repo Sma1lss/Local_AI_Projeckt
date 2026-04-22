@@ -1,0 +1,53 @@
+﻿[
+  {
+    "doc_id": "doc_01.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_01.md",
+    "text": "п»ї# Doc 1\n\nLocal inference pipeline note 1.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_02.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_02.md",
+    "text": "п»ї# Doc 2\n\nLocal inference pipeline note 2.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_03.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_03.md",
+    "text": "п»ї# Doc 3\n\nLocal inference pipeline note 3.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_04.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_04.md",
+    "text": "п»ї# Doc 4\n\nLocal inference pipeline note 4.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_05.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_05.md",
+    "text": "п»ї# Doc 5\n\nLocal inference pipeline note 5.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_06.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_06.md",
+    "text": "п»ї# Doc 6\n\nLocal inference pipeline note 6.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_07.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_07.md",
+    "text": "п»ї# Doc 7\n\nLocal inference pipeline note 7.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_08.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_08.md",
+    "text": "п»ї# Doc 8\n\nLocal inference pipeline note 8.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_09.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_09.md",
+    "text": "п»ї# Doc 9\n\nLocal inference pipeline note 9.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  },
+  {
+    "doc_id": "doc_10.md::0",
+    "path": "B:\\Local_AI_Projeckt\\Python_AI_Model\\data\\docs\\doc_10.md",
+    "text": "п»ї# Doc 10\n\nLocal inference pipeline note 10.\n\n- Use router for task classification.\n- Use retriever for evidence grounding.\n- Use controller scoring: 10*exec_pass + 3*evidence + 1.5*sem_sim + 0.1*logprob.\n- Prefer sandbox execution for generated code."
+  }
+]
+
