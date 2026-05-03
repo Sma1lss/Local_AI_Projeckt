@@ -1,26 +1,44 @@
-﻿# Router Service (C++)
+﻿# Router
 
-Local microservice that queries all configured models in parallel, then sends all answers to a separate judge model to produce the final response. History is stored on disk per chat.
+Отдельный C++-сервис, который:
 
-## Build
+1. поднимает HTTP API;
+2. выбирает все доступные worker-модели;
+3. вызывает их параллельно;
+4. собирает ответы;
+5. отправляет кандидатов в judge-модель;
+6. сохраняет историю по чатам на диск;
+7. подтягивает локальные сниппеты из `B:\Local_AI_Projeckt\literature`.
+
+## Структура
+
+- `config/` - JSON-конфиг endpoint'ов.
+- `history/` - история по чатам в JSONL.
+- `src/` - весь исходный код сервиса.
+- `third_party/` - vendored-зависимости `httplib.h` и `json.hpp`.
+
+## Сборка
 
 ```powershell
-cd B:\Local_AI_Projeckt\Router
+Set-Location B:\Local_AI_Projeckt\Router
 cmake -S . -B build
 cmake --build build --config Release
 ```
 
-## Run
+## Запуск
 
-The service reads model endpoints from:
-1) `EXPERT_ENDPOINTS` environment variable (JSON object)
-2) `B:\Local_AI_Projeckt\Router\config\endpoints.json`
-3) `B:\Local_AI_Projeckt\Python_AI_Model\.env`
-4) `B:\Local_AI_Projeckt\Python_AI_Model\.env.example`
+Сервис читает endpoints в таком порядке:
 
-Example env (PowerShell):
+1. `EXPERT_ENDPOINTS` из environment;
+2. `Router\config\endpoints.json`;
+3. `Python_AI_Model\.env`;
+4. `Python_AI_Model\.env.example`;
+5. корневые `.env`/`.env.example`, если они появятся.
+
+Пример:
 
 ```powershell
+Set-Location B:\Local_AI_Projeckt\Router
 $env:EXPERT_ENDPOINTS='{"codellama":"http://127.0.0.1:8001","starcoder2":"http://127.0.0.1:8011","llama3":"http://127.0.0.1:8010","mpt3":"http://127.0.0.1:8012"}'
 $env:JUDGE_MODEL='llama3'
 $env:ROUTER_PORT='9005'
@@ -29,76 +47,44 @@ B:\Local_AI_Projeckt\Router\build\Release\router_service.exe
 
 ## API
 
-### POST /ask
+### `GET /health`
 
-Request JSON (flexible field names):
+Возвращает:
 
-```json
-{
-  "query": "Your question",
-  "chat_id": "optional",
-  "new_chat": false
-}
-```
+- базовую конфигурацию;
+- пути к `base_dir`, `literature_dir`, `history_dir`;
+- текущую judge-модель;
+- список endpoints;
+- признак, была ли проиндексирована `literature/`.
 
-Accepted aliases: `question` or `message` instead of `query`, `chatId` instead of `chat_id`, `newChat` instead of `new_chat`.
+### `POST /ask`
 
-Response JSON:
+Поддерживает поля:
 
-```json
-{
-  "chat_id": "chat_...",
-  "new_chat": true,
-  "answer": "final judge answer",
-  "judge": { "model": "llama3", "ok": true, "error": "", "latency_ms": 1234 },
-  "used_models": ["codellama", "starcoder2"],
-  "candidates": [
-    {"model": "codellama", "ok": true, "error": "", "latency_ms": 1200, "text": "..."}
-  ],
-  "literature": [
-    {"doc_id": "file.md::0", "path": "...", "score": 0.42, "snippet": "..."}
-  ]
-}
-```
+- `query`, `question` или `message`;
+- `chat_id` или `chatId`;
+- `new_chat` или `newChat`.
 
-### GET /health
-Returns current configuration and status.
+Ответ содержит:
 
-## History storage
+- `chat_id`;
+- `answer` judge-модели;
+- `judge` с latency и ошибкой;
+- `used_models`;
+- `candidates` от worker-моделей;
+- `literature` со сниппетами локального индекса.
 
-History is stored under `B:\Local_AI_Projeckt\Router\history`:
+## История
 
-- `Router\history\<chat_id>\models\<model>.jsonl`
-- `Router\history\<chat_id>\judge.jsonl`
-- `Router\history\<chat_id>\meta.json`
+История хранится в `Router\history\<chat_id>\`:
 
-Each history file is capped to the last 10 turns by default (configurable).
+- `models\<model>.jsonl` - ответы каждой модели;
+- `judge.jsonl` - финальные judge-ответы;
+- `meta.json` - метаданные чата.
 
-## Config
+## Ограничения
 
-Environment variables (all optional):
-
-- `BASE_DIR` (default: project root)
-- `EXPERT_ENDPOINTS` (JSON map)
-- `JUDGE_MODEL` (default: `llama3`)
-- `JUDGE_URL` (optional override)
-- `MODEL_TIMEOUT_MS` (default: 20000)
-- `JUDGE_TIMEOUT_MS` (default: 25000)
-- `MODEL_MAX_TOKENS` (default: 512)
-- `JUDGE_MAX_TOKENS` (default: 512)
-- `MODEL_TEMPERATURE` (default: 0.2)
-- `HISTORY_MAX_TURNS` (default: 10)
-- `HISTORY_CONTEXT_TURNS` (default: 10)
-- `LITERATURE_DIR` (default: `B:\Local_AI_Projeckt\literature`)
-- `LITERATURE_TOP_K` (default: 4)
-- `LITERATURE_MIN_SCORE` (default: 0.18)
-- `LITERATURE_CHUNK_CHARS` (default: 1200)
-- `LITERATURE_SNIPPET_CHARS` (default: 700)
-- `ROUTER_HOST` (default: 0.0.0.0)
-- `ROUTER_PORT` (default: 9005)
-
-Notes:
-- The judge model is excluded from the worker list to ensure separation.
-- Literature is used only if similarity crosses `LITERATURE_MIN_SCORE`.
-
-
+- поддерживается только `http`, без `https`;
+- тестов в папке пока нет;
+- нет аутентификации и rate limiting;
+- поиск по `literature/` работает только если папка реально заполнена.
